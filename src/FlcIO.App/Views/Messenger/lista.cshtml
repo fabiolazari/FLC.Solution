@@ -1,0 +1,55 @@
+﻿@model IEnumerable<FlcIO.App.ViewModels.FlcMessageViewModel>
+
+@{
+    ViewData["Title"] = "Mensagens!";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr>
+<vc:summary></vc:summary>
+<p>
+    <a class="btn btn-info" asp-action="Create">Resumo</a>
+</p>
+
+
+<table class="table table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdRequest)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Timestamp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MessageDescription)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdRequest)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Timestamp)
+            </td>
+             <td>
+                @Html.DisplayFor(modelItem => item.MessageDescription)
+            </td>
+            <td>
+                <a class="btn btn-info" asp-controller="Produtos" asp-action="Details" asp-route-id="@item.Id"><span class="fa fa-search"></span></a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
