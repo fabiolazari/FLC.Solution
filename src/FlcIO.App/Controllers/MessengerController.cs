@@ -1,27 +1,35 @@
-﻿using FlcIO.App.ViewModels;
+﻿using AutoMapper;
+using FlcIO.App.ViewModels;
+using FlcIO.Business.Interfaces;
 using FlcIO.Business.Services;
-using FlcIO.Business.Services.AWS_Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace FlcIO.App.Controllers
 {
 	public class MessengerController : Controller
 	{
-		private MessengerService _message;
+		private readonly IFlcMessageRepository _MesssageRepository;
+		private readonly IMapper _mapper;
+		private string _inputMensagem;
+		private Int32 _result;
+		private bool _send;
+		private bool _stop;
+		private bool _back;
 
 		public MessengerController()
 		{
-			_message = new MessengerService();
 		}
 
 		public ActionResult Index()
 		{
+			_inputMensagem = string.Empty;
+			_send = false;
+			_stop = false;
+			_back = false;
 
 			return View();
 		}
@@ -34,29 +42,50 @@ namespace FlcIO.App.Controllers
 		[HttpPost]
 		public IActionResult Send(string inputMensagem)
 		{
+			_inputMensagem = inputMensagem;
 
-			ViewData["Mensagem"] = inputMensagem;
-			ViewBag.mensagem = inputMensagem;
-			//_message.SendMessage(inputMensagem);
+			if (MessengerService.ExecutionCount == 0)
+				MessengerService.SendMessage(_inputMensagem);
 
-			return View();
+			_send = false;
+			_stop = false;
+			_back = true;
+
+			return Send();
 		}
 
 		public IActionResult Stop()
 		{
-			//Para parar
-			_message.StopMessage();
+			_result = MessengerService.ExecutionCount;
+			//MessengerService.StopMessage();
 
-			return View();
+			_send = true;
+			_stop = true;
+			_back = false;
+
+			return Send();
 		}
 
 		public async Task<IActionResult> Receive()
 		{
-			//para receber
-			AmazonUtil _amazonUtil = new AmazonUtil();
-			var retorno = await _amazonUtil.AwsReceiveMessage();
+			FlcMessageViewModel messages = new FlcMessageViewModel();
+			messages = _mapper.Map<FlcMessageViewModel>(MessengerService.ReceiveMessage());
 
-			return View();
+			//Gravar dados na base
+			//var produtoAtualizacao = _mapper.Map<FlcMessageViewModel>(await _MesssageRepository.ObterProdutoFornecedor(id));
+
+			return View("Send", messages);
+		}
+
+		public IActionResult Send()
+		{
+			ViewData["sendButtonStatus"] = (_send) ? "disabled" : "";
+			ViewData["stopButtonStatus"] = (_stop) ? "disabled" : "";
+			ViewData["backButtonStatus"] = (_back) ? "disabled" : "";
+			ViewData["Mensagem"] = (string.IsNullOrEmpty(_inputMensagem)) ? "xxx" : _inputMensagem;
+			ViewData["Counter"] = (MessengerService.ExecutionCount == 0) ? _result : MessengerService.ExecutionCount;
+
+			return View("Send");
 		}
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

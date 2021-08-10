@@ -7,49 +7,59 @@ using System.Threading.Tasks;
 
 namespace FlcIO.Business.Services
 {
-	public class MessengerService
+	public static class MessengerService
 	{
         private static Thread threadMain;
         private static CancellationTokenSource source;
-        private AmazonUtil _amazonUtil;
-        private Int32 Segundo = 1000;
+        private static CancellationToken _token;
+        private static AmazonUtil _amazonUtil = new AmazonUtil();
+        public static int _executionCount;
+        private static Int32 Segundo = 1000; 
 
-        public MessengerService()
+        public static int ExecutionCount
         {
-            _amazonUtil = new AmazonUtil();
-        }
-
-        public void SendMessage(string message)
+			get { return _executionCount; }
+			set { _executionCount = value; }
+		}
+ 
+        public static Task SendMessage(string message)
         {
             try
             {
-                threadMain = new Thread(new ThreadStart(() => { while (Executa(message)) ; }));
+                threadMain = new Thread(new ThreadStart(() => 
+                {
+                    while (Executa(message)); 
+                }));
                 threadMain.Start();
             }
             catch (Exception e) when (!string.IsNullOrEmpty(e.Message))
             {
                 //Fazer o tratamento
             }
+
+            return Task.CompletedTask;
         }
 
-        public void StopMessage()
+        public static Task StopMessage()
 		{
             threadMain.Interrupt();
+            _executionCount = 0;
+            return Task.CompletedTask;
         }
 
-        private bool Executa(string message)
+        private static bool Executa(string message)
         {
             source = new CancellationTokenSource();
-            CancellationToken token = source.Token;
-            TaskFactory factory = new TaskFactory(token);
+            _token = source.Token;
+            TaskFactory factory = new TaskFactory(_token);
             List<Task> tarefa = new List<Task>();
-            var retorno = string.Empty;
 
 			try
 			{
 				tarefa.Add(factory.StartNew(() => {
-					Task.WaitAny(_amazonUtil.AwsSendMessage(new FlcMessage(message)));
-				}, token));
+                    Interlocked.Increment(ref _executionCount);
+                    //Task.WaitAny(_amazonUtil.AwsSendMessage(new FlcMessage(message)));
+                }, _token));
 
 				tarefa.RemoveAll(t => t.Status != TaskStatus.Running);
 				Thread.Sleep(Segundo * 5);
@@ -60,6 +70,11 @@ namespace FlcIO.Business.Services
 			}
 
             return true;
+        }
+
+        public static async Task<List<FlcMessage>> ReceiveMessage()
+        {
+            return await _amazonUtil.AwsReceiveMessage();
         }
     }
 }

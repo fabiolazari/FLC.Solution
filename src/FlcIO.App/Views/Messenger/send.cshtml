@@ -1,16 +1,61 @@
-﻿@{
-    ViewData["Title"] = "Send...";
+﻿@model FlcIO.App.ViewModels.FlcMessageViewModel
 
+@{
+    ViewData["Title"] = "Envio de mensagens...";
 }
-<h1>@ViewData["Title"]</h1>
 
-<h2>@ViewData["Mensagem"]</h2>
+<div class="jumbotron p-2 p-md-2 text-black-50 rounded bg-light">
+    <div class="col-md-8 px-1">
+        <h1 class="display-5 font-italic">@ViewData["Title"]</h1>
+        <p class="lead my-3">Enviando e recebendo mensagens usando filas SQS da AWS Anmazon!</p>
+        <div class="form-group">
+            <a class="btn btn-outline-info btn-messenger @ViewData["stopButtonStatus"]" asp-controller="Messenger" asp-action="Stop">Parar</a>
+            <a class="btn btn-outline-info btn-messenger @ViewData["sendButtonStatus"]" asp-controller="Messenger" asp-action="Send">Atualizar</a>
+            <a class="btn btn-outline-info btn-messenger @ViewData["backButtonStatus"]" asp-controller="Messenger" asp-action="Index">Voltar</a>
+        </div>
+    </div>
+</div>
 
-<h2>@ViewBag.mensagem</h2>
+<div class="row mb-2">
+    <div class="col-md-3">
+        <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+            <div class="col p-4 d-flex flex-column position-static">
+                <strong class="d-inline-block mb-2 text-primary">Enviando...</strong>
+                <div class="mb-1 text-muted">Quantidade: @ViewData["Counter"]</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+            <div class="col p-4 d-flex flex-column position-static">
+                <strong class="d-inline-block mb-2 text-primary">Recebendo...</strong>
+                <table class="table table-sm table-light">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th class="col-md-2" scope="col">Id</th>
+                            <th class="col-md-2" scope="col">Id Request</th>
+                            <th class="col-md-1" scope="col">Data</th>
+                            <th class="col-md-4" scope="col">Mensagem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">2545578555555551</th>
+                            <td>14</td>
+                            <td>05/08/2021</td>
+                            <td>Hello World!</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-<p>Enviando Mensagens</p>
-
-
-<div class="form-group">
-    <a class="btn btn-info" asp-controller="Messenger" asp-action="Index">Voltar</a>
+<div class="row mb-2">
+    <div class="col-md-3">
+        <div class="col p-4 d-flex flex-column position-static">
+            <div class="card-text mb-aut">@ViewData["Mensagem"]</div>
+        </div>
+    </div>
 </div>
