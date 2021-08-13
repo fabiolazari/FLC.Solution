@@ -58,7 +58,7 @@ namespace FlcIO.Business.Services
 			{
 				tarefa.Add(factory.StartNew(() => {
                     Interlocked.Increment(ref _executionCount);
-                    //Task.WaitAny(_amazonUtil.AwsSendMessage(new FlcMessage(message)));
+                    Task.WaitAny(_amazonUtil.AwsSendMessage(new FlcMessage(message)));
                 }, _token));
 
 				tarefa.RemoveAll(t => t.Status != TaskStatus.Running);
@@ -72,7 +72,7 @@ namespace FlcIO.Business.Services
             return true;
         }
 
-        public static async Task<List<FlcMessage>> ReceiveMessage()
+        public static async Task<IEnumerable<FlcMessage>> ReceiveMessage()
         {
             return await _amazonUtil.AwsReceiveMessage();
         }

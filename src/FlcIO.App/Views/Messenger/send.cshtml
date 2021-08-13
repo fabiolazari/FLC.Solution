@@ -1,4 +1,4 @@
-﻿@model FlcIO.App.ViewModels.FlcMessageViewModel
+﻿@model IEnumerable<FlcIO.App.ViewModels.FlcMessageViewModel>
 
 @{
     ViewData["Title"] = "Envio de mensagens...";
@@ -11,13 +11,14 @@
         <div class="form-group">
             <a class="btn btn-outline-info btn-messenger @ViewData["stopButtonStatus"]" asp-controller="Messenger" asp-action="Stop">Parar</a>
             <a class="btn btn-outline-info btn-messenger @ViewData["sendButtonStatus"]" asp-controller="Messenger" asp-action="Send">Atualizar</a>
-            <a class="btn btn-outline-info btn-messenger @ViewData["backButtonStatus"]" asp-controller="Messenger" asp-action="Index">Voltar</a>
+            <a class="btn btn-outline-info btn-messenger @ViewData["backButtonStatus"]" asp-controller="Messenger" asp-action="Receive">Receber</a>
+            <a class="btn btn-outline-info btn-messenger @ViewData["receiveButtonStatus"]" asp-controller="Messenger" asp-action="Index">Voltar</a>
         </div>
     </div>
 </div>
 
 <div class="row mb-2">
-    <div class="col-md-3">
+    <div class="col-md-2">
         <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
             <div class="col p-4 d-flex flex-column position-static">
                 <strong class="d-inline-block mb-2 text-primary">Enviando...</strong>
@@ -25,26 +26,29 @@
             </div>
         </div>
     </div>
-    <div class="col-md-9">
+    <div class="col-md-10">
         <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
             <div class="col p-4 d-flex flex-column position-static">
                 <strong class="d-inline-block mb-2 text-primary">Recebendo...</strong>
-                <table class="table table-sm table-light">
+                <table class="table table-responsive-sm table-light">
                     <thead class="table-secondary">
                         <tr>
-                            <th class="col-md-2" scope="col">Id</th>
-                            <th class="col-md-2" scope="col">Id Request</th>
-                            <th class="col-md-1" scope="col">Data</th>
-                            <th class="col-md-4" scope="col">Mensagem</th>
+                            <th class="col-md-4" scope="col">@Html.DisplayNameFor(model => model.Id)</th>
+                            <th class="col-md-1" scope="col">@Html.DisplayNameFor(model => model.IdRequest)</th>
+                            <th class="col-md-2" scope="col">@Html.DisplayNameFor(model => model.Timestamp)</th>
+                            <th class="col-md-3" scope="col">@Html.DisplayNameFor(model => model.MessageDescription)</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th scope="row">2545578555555551</th>
-                            <td>14</td>
-                            <td>05/08/2021</td>
-                            <td>Hello World!</td>
-                        </tr>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <th scope="row">@Html.DisplayFor(modelItem => item.Id)</th>
+                                <td>@Html.DisplayFor(modelItem => item.IdRequest)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+                                <td>@Html.DisplayFor(modelItem => item.MessageDescription)</td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>

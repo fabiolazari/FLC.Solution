@@ -9,11 +9,12 @@ namespace FlcIO.Business.Models
 		public Guid Id
 		{
 			get { return _id; }
+			set { _id = value; }
 		}
 
 		public Entity()
 		{
-			_id = new Guid();
+			_id = Guid.NewGuid();
 		}
 	}
 }

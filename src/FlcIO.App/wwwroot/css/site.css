@@ -77,3 +77,8 @@ body {
 .input-mensagem {
     width: 250px;
 }
+
+.flc-container {
+    margin-left: 10px;
+    margin-right: 10px;
+}

@@ -75,7 +75,7 @@ namespace FlcIO.Business.Services.AWS_Services
 			await _client.SendMessageAsync(request);
 		}
 
-		public async Task<List<FlcMessage>> AwsReceiveMessage()
+		public async Task<IEnumerable<FlcMessage>> AwsReceiveMessage()
 		{
 			var request = new ReceiveMessageRequest
 			{

@@ -11,20 +11,24 @@ namespace FlcIO.Business.Models
 		public Int32 IdRequest
 		{
 			get { return _idRequest; }
+			set { _idRequest = value; }
 		}
 
 		public DateTime Timestamp
 		{
 			get { return _timestamp; }
+			set { _timestamp = value; }
 		}
 
 		public string MessageDescription
 		{
 			get { return _messageDescription; }
+			set { _messageDescription = value; }
 		}
 
 		public FlcMessage()
-		{ 
+		{
+			_messageDescription = string.Empty;
 		}
 		
 		public FlcMessage(string messageDescricao)
