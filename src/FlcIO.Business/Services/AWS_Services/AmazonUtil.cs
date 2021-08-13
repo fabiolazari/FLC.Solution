@@ -88,7 +88,7 @@ namespace FlcIO.Business.Services.AWS_Services
 				foreach (var mensagem in response.Messages)
 				{
 					_messages.Add(JsonConvert.DeserializeObject<FlcMessage>(mensagem.Body));
-					await _client.DeleteMessageAsync(_queueUrl, mensagem.ReceiptHandle);
+					//await _client.DeleteMessageAsync(_queueUrl, mensagem.ReceiptHandle);
 				}
 			}
 			catch (Exception ex)

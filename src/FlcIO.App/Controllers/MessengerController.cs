@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FlcIO.App.ViewModels;
 using FlcIO.Business.Interfaces;
-using FlcIO.Business.Models;
 using FlcIO.Business.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +16,7 @@ namespace FlcIO.App.Controllers
 	{
 		private readonly IFlcMessageRepository _messsageRepository;
 		private readonly IMapper _mapper;
+		private List<FlcMessageViewModel> _messages = new List<FlcMessageViewModel>();
 		private string _inputMensagem;
 		private Int32 _result;
 		private bool _send;
@@ -32,6 +32,7 @@ namespace FlcIO.App.Controllers
 
 		public ActionResult Index()
 		{
+			_messages.Clear();
 			_send = false;
 			_stop = false;
 			_back = false;
@@ -46,7 +47,7 @@ namespace FlcIO.App.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult Send(string inputMensagem, bool flexCheckReceive)
+		public IActionResult Send(string inputMensagem, bool flexCheckReceive = false)
 		{
 			_inputMensagem = inputMensagem;
 
@@ -63,6 +64,8 @@ namespace FlcIO.App.Controllers
 
 		public IActionResult Stop()
 		{
+			var mess = _messages;
+
 			_result = MessengerService.ExecutionCount;
 			MessengerService.StopMessage();
 
@@ -76,18 +79,24 @@ namespace FlcIO.App.Controllers
 
 		public async Task<IActionResult> Receive()
 		{
-			var messages = _mapper.Map<IEnumerable<FlcMessageViewModel>>(await MessengerService.ReceiveMessage());
-
+			_messages.AddRange(_mapper.Map<IEnumerable<FlcMessageViewModel>>(await MessengerService.ReceiveMessage()).ToList());
 			//Gravar dados na base
+			/*
+			foreach (var message in messages)
+			{
+				await _messsageRepository.Add(_mapper.Map<FlcMessage>(message));
+			}*/
+
+			/*
 			messages.ToList().ForEach(message =>
 			{
 				_messsageRepository.Add(_mapper.Map<FlcMessage>(message));
 			});
-			
+			*/
 
 			//Pega todos os dados da base  depois
 
-			return View("Send", messages);
+			return View("Send", _messages);
 		}
 
 		public IActionResult Send()
@@ -99,7 +108,7 @@ namespace FlcIO.App.Controllers
 			ViewData["Mensagem"] = _inputMensagem;
 			ViewData["Counter"] = (MessengerService.ExecutionCount == 0) ? _result : MessengerService.ExecutionCount;
 
-			return View("Send", new List<FlcMessageViewModel>());
+			return View("Send", _messages);
 		}
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

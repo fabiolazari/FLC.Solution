@@ -9,19 +9,20 @@
 </div>
 @using (Html.BeginForm("Send", "Messenger"))
 {
-    <div class="jumbotron p-5 p-md-5 text-white rounded bg-light">
-        <div class="form-group d-sm-inline-flex">
-            <input class="form-check-input" type="checkbox" value="" name="flexCheckReceive" id="flexCheckReceive" checked>
-            <label class="form-check-label" for="flexCheckReceive">Receber automaticamente</label>
+<div class="jumbotron p-5 p-md-5 rounded bg-light">
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" name="flexCheckReceive" id="flexCheckReceive"  value="true" checked>
+        <label class="form-check-label" for="flexCheckReceive">Receber automaticamente</label>
+    </div>
+   
+    <div class="form-group d-inline-flex mt-3">
+        <div class="input-group input-group mb-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">Mensagem</span>
+            <input type="text" class="form-control input-mensagem" name="inputMensagem" id="inputMensagem" value="Hello World!" placeholder="Digite a mensagem aqui...">
         </div>
-        <div class="form-group d-sm-inline-flex">
-            <div class="col-md-8 px-5">
-                <label>Mensagem:</label>
-                <input class="form-control input-mensagem" name="inputMensagem" id="inputMensagem" value="Hello World!" />
-            </div>
-            <div class="col-md-4 px-1">
-                <button class="btn btn-outline-primary btn-messenger" id="btnMessenger" type="submit">Iniciar</button>
-            </div>
+        <div class="d-grid gap-2 ml-2">
+            <button class="btn btn-outline-primary btn-messenger" id="btnMessenger" type="submit">Iniciar</button>
         </div>
     </div>
+</div>
 }
