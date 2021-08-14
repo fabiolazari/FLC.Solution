@@ -82,3 +82,9 @@ body {
     margin-left: 10px;
     margin-right: 10px;
 }
+
+.flc-table {
+    font-size: 15px;
+    font-style: oblique;
+    font-family: arial;
+}

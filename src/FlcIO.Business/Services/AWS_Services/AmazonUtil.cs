@@ -6,7 +6,7 @@ using Amazon.SQS.Model;
 using FlcIO.Business.Models;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FlcIO.Business.Services.AWS_Services
@@ -18,7 +18,7 @@ namespace FlcIO.Business.Services.AWS_Services
 		private BasicAWSCredentials _credential;
 		private RegionEndpoint _region;
 		private AmazonSQSClient _client;
-		private List<FlcMessage> _messages;
+		private FlcMessage _message;
 		private string _queueUrl;
 
 		#endregion
@@ -29,7 +29,6 @@ namespace FlcIO.Business.Services.AWS_Services
 		{
 			_credential = AwsCredentials();
 			_client = new AmazonSQSClient(_credential, _region);
-			_messages = new List<FlcMessage>();
 			_queueUrl = AwsCheckQueue().Result;
 		}
 
@@ -75,8 +74,9 @@ namespace FlcIO.Business.Services.AWS_Services
 			await _client.SendMessageAsync(request);
 		}
 
-		public async Task<IEnumerable<FlcMessage>> AwsReceiveMessage()
+		public async Task<FlcMessage> AwsReceiveMessage()
 		{
+			_message = null;
 			var request = new ReceiveMessageRequest
 			{
 				QueueUrl = _queueUrl
@@ -85,18 +85,19 @@ namespace FlcIO.Business.Services.AWS_Services
 			try
 			{
 				var response = await _client.ReceiveMessageAsync(request);
-				foreach (var mensagem in response.Messages)
+				if (response.Messages.Count > 0)
 				{
-					_messages.Add(JsonConvert.DeserializeObject<FlcMessage>(mensagem.Body));
-					//await _client.DeleteMessageAsync(_queueUrl, mensagem.ReceiptHandle);
+					var message = response.Messages.FirstOrDefault();
+					_message = JsonConvert.DeserializeObject<FlcMessage>(message.Body);
+					await _client.DeleteMessageAsync(_queueUrl, message.ReceiptHandle);
 				}
 			}
 			catch (Exception ex)
 			{
-				_messages.Add(new FlcMessage($"Erro: {ex.Message}"));
-				return _messages;
+				_message = new FlcMessage($"Erro: {ex.Message}");
+				return _message;
 			}
-			return _messages;
+			return _message;
 		}
 
 		#endregion

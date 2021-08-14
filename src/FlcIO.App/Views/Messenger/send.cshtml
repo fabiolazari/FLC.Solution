@@ -10,9 +10,9 @@
         <p class="lead my-3">Enviando e recebendo mensagens usando filas SQS da AWS Anmazon!</p>
         <div class="form-group">
             <a class="btn btn-outline-info btn-messenger @ViewData["stopButtonStatus"]" asp-controller="Messenger" asp-action="Stop">Parar</a>
-            <a class="btn btn-outline-info btn-messenger @ViewData["sendButtonStatus"]" asp-controller="Messenger" asp-action="Send">Atualizar</a>
-            <a class="btn btn-outline-info btn-messenger @ViewData["backButtonStatus"]" asp-controller="Messenger" asp-action="Receive">Receber</a>
-            <a class="btn btn-outline-info btn-messenger @ViewData["receiveButtonStatus"]" asp-controller="Messenger" asp-action="Index">Voltar</a>
+            <a class="btn btn-outline-info btn-messenger @ViewData["sendButtonStatus"]" asp-controller="Messenger" asp-action="Atualizar">Atualizar</a>
+            <a class="btn btn-outline-info btn-messenger @ViewData["receiveButtonStatus"]" asp-controller="Messenger" asp-action="Receive">Receber</a>
+            <a class="btn btn-outline-info btn-messenger @ViewData["backButtonStatus"]" asp-controller="Messenger" asp-action="Index">Voltar</a>
         </div>
     </div>
 </div>
@@ -30,7 +30,7 @@
         <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
             <div class="col p-4 d-flex flex-column position-static">
                 <strong class="d-inline-block mb-2 text-primary">Recebendo...</strong>
-                <table class="table table-responsive-sm table-light">
+                <table class="table table-responsive-sm table-light flc-table">
                     <thead class="table-secondary">
                         <tr>
                             <th class="col-md-4" scope="col">@Html.DisplayNameFor(model => model.Id)</th>
@@ -52,14 +52,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mb-2">
-    <div class="col-md-3">
-        <div class="col p-4 d-flex flex-column position-static">
-            <div class="card-text mb-aut">@ViewData["Mensagem"]</div>
         </div>
     </div>
 </div>

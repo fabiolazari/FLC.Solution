@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using FlcIO.App.ViewModels;
 using FlcIO.Business.Interfaces;
+using FlcIO.Business.Models;
 using FlcIO.Business.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlcIO.App.Controllers
 {
@@ -16,9 +16,6 @@ namespace FlcIO.App.Controllers
 	{
 		private readonly IFlcMessageRepository _messsageRepository;
 		private readonly IMapper _mapper;
-		private List<FlcMessageViewModel> _messages = new List<FlcMessageViewModel>();
-		private string _inputMensagem;
-		private Int32 _result;
 		private bool _send;
 		private bool _stop;
 		private bool _back;
@@ -32,7 +29,9 @@ namespace FlcIO.App.Controllers
 
 		public ActionResult Index()
 		{
-			_messages.Clear();
+			MessengerService.ExecutionCount = 0;
+			MessengerService.Messages.Clear();
+
 			_send = false;
 			_stop = false;
 			_back = false;
@@ -49,66 +48,54 @@ namespace FlcIO.App.Controllers
 		[HttpPost]
 		public IActionResult Send(string inputMensagem, bool flexCheckReceive = false)
 		{
-			_inputMensagem = inputMensagem;
-
 			if (MessengerService.ExecutionCount == 0)
-				MessengerService.SendMessage(_inputMensagem);
+				MessengerService.SendMessage(inputMensagem);
 
 			_send = false;
 			_stop = false;
 			_back = true;
 			_receive = false;
 
-			return Send();
+			return Atualizar();
 		}
 
 		public IActionResult Stop()
 		{
-			var mess = _messages;
-
-			_result = MessengerService.ExecutionCount;
 			MessengerService.StopMessage();
 
 			_send = true;
 			_stop = true;
 			_back = false;
-			_receive = true;
+			_receive = false;
 
-			return Send();
+			return Atualizar();
 		}
 
-		public async Task<IActionResult> Receive()
+		public IActionResult Receive()
 		{
-			_messages.AddRange(_mapper.Map<IEnumerable<FlcMessageViewModel>>(await MessengerService.ReceiveMessage()).ToList());
-			//Gravar dados na base
-			/*
-			foreach (var message in messages)
-			{
-				await _messsageRepository.Add(_mapper.Map<FlcMessage>(message));
-			}*/
+			MessengerService.ReceiveMessage();
+			var messages = _mapper.Map<IEnumerable<FlcMessageViewModel>>(MessengerService.Messages);
 
-			/*
 			messages.ToList().ForEach(message =>
 			{
+				var check = _messsageRepository.GetById(message.Id).Result;
+				if (check == null)
 				_messsageRepository.Add(_mapper.Map<FlcMessage>(message));
 			});
-			*/
 
-			//Pega todos os dados da base  depois
-
-			return View("Send", _messages);
+			ViewData["Counter"] = MessengerService.ExecutionCount;
+			return View("Send", messages);
 		}
 
-		public IActionResult Send()
+		public IActionResult Atualizar()
 		{
 			ViewData["sendButtonStatus"] = (_send) ? "disabled" : "";
 			ViewData["stopButtonStatus"] = (_stop) ? "disabled" : "";
 			ViewData["backButtonStatus"] = (_back) ? "disabled" : "";
 			ViewData["receiveButtonStatus"] = (_receive) ? "disabled" : "";
-			ViewData["Mensagem"] = _inputMensagem;
-			ViewData["Counter"] = (MessengerService.ExecutionCount == 0) ? _result : MessengerService.ExecutionCount;
+			ViewData["Counter"] = MessengerService.ExecutionCount;
 
-			return View("Send", _messages);
+			return View("Send", _mapper.Map<IEnumerable<FlcMessageViewModel>>(MessengerService.Messages));
 		}
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
