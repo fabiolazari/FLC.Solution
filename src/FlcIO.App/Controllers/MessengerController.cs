@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 
 namespace FlcIO.App.Controllers
 {
@@ -16,10 +15,8 @@ namespace FlcIO.App.Controllers
 	{
 		private readonly IFlcMessageRepository _messsageRepository;
 		private readonly IMapper _mapper;
-		private bool _send;
 		private bool _stop;
 		private bool _back;
-		private bool _receive;
 
 		public MessengerController(IFlcMessageRepository messsageRepository, IMapper mapper)
 		{
@@ -27,15 +24,13 @@ namespace FlcIO.App.Controllers
 			_mapper = mapper;
 		}
 
-		public ActionResult Index()
+		public IActionResult Index()
 		{
 			MessengerService.ExecutionCount = 0;
 			MessengerService.Messages.Clear();
 
-			_send = false;
 			_stop = false;
 			_back = false;
-			_receive = false;
 
 			return View();
 		}
@@ -51,24 +46,20 @@ namespace FlcIO.App.Controllers
 			if (MessengerService.ExecutionCount == 0)
 				MessengerService.SendMessage(inputMensagem);
 
-			_send = false;
 			_stop = false;
 			_back = true;
-			_receive = false;
 
-			return Atualizar();
+			return SendPage();
 		}
 
 		public IActionResult Stop()
 		{
 			MessengerService.StopMessage();
 
-			_send = true;
 			_stop = true;
 			_back = false;
-			_receive = false;
 
-			return Atualizar();
+			return SendPage();
 		}
 
 		public IActionResult Receive()
@@ -80,22 +71,25 @@ namespace FlcIO.App.Controllers
 			{
 				var check = _messsageRepository.GetById(message.Id).Result;
 				if (check == null)
-				_messsageRepository.Add(_mapper.Map<FlcMessage>(message));
+					_messsageRepository.Add(_mapper.Map<FlcMessage>(message));
 			});
-
-			ViewData["Counter"] = MessengerService.ExecutionCount;
-			return View("Send", messages);
+			
+			return PartialView("_ReceivedMessages", messages);
 		}
 
-		public IActionResult Atualizar()
+		public IActionResult UpdateCounter()
 		{
-			ViewData["sendButtonStatus"] = (_send) ? "disabled" : "";
+			ViewData["Counter"] = MessengerService.ExecutionCount;
+			return PartialView("_CounterSend");
+		}
+
+		public IActionResult SendPage()
+		{
 			ViewData["stopButtonStatus"] = (_stop) ? "disabled" : "";
 			ViewData["backButtonStatus"] = (_back) ? "disabled" : "";
-			ViewData["receiveButtonStatus"] = (_receive) ? "disabled" : "";
 			ViewData["Counter"] = MessengerService.ExecutionCount;
 
-			return View("Send", _mapper.Map<IEnumerable<FlcMessageViewModel>>(MessengerService.Messages));
+			return View("Send");
 		}
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

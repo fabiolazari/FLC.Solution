@@ -1,0 +1,21 @@
+﻿@model IEnumerable<FlcIO.App.ViewModels.FlcMessageViewModel>
+
+<thead class="table-secondary">
+    <tr>
+        <th class="col-md-4" scope="col">@Html.DisplayNameFor(model => model.Id)</th>
+        <th class="col-md-1" scope="col">@Html.DisplayNameFor(model => model.IdRequest)</th>
+        <th class="col-md-2" scope="col">@Html.DisplayNameFor(model => model.Timestamp)</th>
+        <th class="col-md-3" scope="col">@Html.DisplayNameFor(model => model.MessageDescription)</th>
+    </tr>
+</thead>
+<tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <th scope="row">@Html.DisplayFor(modelItem => item.Id)</th>
+            <td>@Html.DisplayFor(modelItem => item.IdRequest)</td>
+            <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
+            <td>@Html.DisplayFor(modelItem => item.MessageDescription)</td>
+        </tr>
+    }
+</tbody>

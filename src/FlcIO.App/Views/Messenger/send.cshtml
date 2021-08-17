@@ -1,7 +1,18 @@
-﻿@model IEnumerable<FlcIO.App.ViewModels.FlcMessageViewModel>
-
-@{
+﻿@{
     ViewData["Title"] = "Envio de mensagens...";
+}
+
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $("#_receive").load("Receive");
+            setInterval(() => {
+                $("#_counter").load("UpdateCounter");
+                $("#_receive").load("Receive");
+            }, 1000);
+        });
+    </script>
 }
 
 <div class="jumbotron p-2 p-md-2 text-black-50 rounded bg-light">
@@ -10,8 +21,6 @@
         <p class="lead my-3">Enviando e recebendo mensagens usando filas SQS da AWS Anmazon!</p>
         <div class="form-group">
             <a class="btn btn-outline-info btn-messenger @ViewData["stopButtonStatus"]" asp-controller="Messenger" asp-action="Stop">Parar</a>
-            <a class="btn btn-outline-info btn-messenger @ViewData["sendButtonStatus"]" asp-controller="Messenger" asp-action="Atualizar">Atualizar</a>
-            <a class="btn btn-outline-info btn-messenger @ViewData["receiveButtonStatus"]" asp-controller="Messenger" asp-action="Receive">Receber</a>
             <a class="btn btn-outline-info btn-messenger @ViewData["backButtonStatus"]" asp-controller="Messenger" asp-action="Index">Voltar</a>
         </div>
     </div>
@@ -22,7 +31,7 @@
         <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
             <div class="col p-4 d-flex flex-column position-static">
                 <strong class="d-inline-block mb-2 text-primary">Enviando...</strong>
-                <div class="mb-1 text-muted">Quantidade: @ViewData["Counter"]</div>
+                <div class="mb-1 text-muted">Quantidade: <b id="_counter"></b></div>
             </div>
         </div>
     </div>
@@ -30,26 +39,8 @@
         <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
             <div class="col p-4 d-flex flex-column position-static">
                 <strong class="d-inline-block mb-2 text-primary">Recebendo...</strong>
-                <table class="table table-responsive-sm table-light flc-table">
-                    <thead class="table-secondary">
-                        <tr>
-                            <th class="col-md-4" scope="col">@Html.DisplayNameFor(model => model.Id)</th>
-                            <th class="col-md-1" scope="col">@Html.DisplayNameFor(model => model.IdRequest)</th>
-                            <th class="col-md-2" scope="col">@Html.DisplayNameFor(model => model.Timestamp)</th>
-                            <th class="col-md-3" scope="col">@Html.DisplayNameFor(model => model.MessageDescription)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                <th scope="row">@Html.DisplayFor(modelItem => item.Id)</th>
-                                <td>@Html.DisplayFor(modelItem => item.IdRequest)</td>
-                                <td>@Html.DisplayFor(modelItem => item.Timestamp)</td>
-                                <td>@Html.DisplayFor(modelItem => item.MessageDescription)</td>
-                            </tr>
-                        }
-                    </tbody>
+                <table class="table table-responsive-sm table-light flc-table" id="_receive">
+                   
                 </table>
             </div>
         </div>

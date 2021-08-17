@@ -4,14 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FlcIO.Business.Services
 {
 	public static class MessengerService
 	{
-        #region Variables
+		#region Variables
 
-        private static Thread threadMain;
+		private static Thread threadMain;
         private static CancellationTokenSource source;
         private static CancellationToken _token;
         private static AmazonUtil _amazonUtil = new AmazonUtil();

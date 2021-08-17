@@ -2,12 +2,12 @@
     ViewData["Title"] = "Página principal";
 }
 
-
 <div class="text-center">
     <h1 class="display-4">Serviço de Mensageria</h1>
     <p>Link do projeto: <a href="https://github.com/fabiolazari/FLC.Solution.git">usando filas SQS AWS Amazon para enviar e receber mensagens...</a>.</p>
 </div>
-@using (Html.BeginForm("Send", "Messenger"))
+
+@using (Html.BeginForm("Send", "Messenger", FormMethod.Post))
 {
 <div class="jumbotron p-5 p-md-5 rounded bg-light">
     <div class="form-check form-switch">
