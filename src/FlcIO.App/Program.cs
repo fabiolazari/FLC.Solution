@@ -1,11 +1,9 @@
+using System;
+using Serilog;
+using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace FlcIO.App
 {
@@ -13,11 +11,47 @@ namespace FlcIO.App
 	{
 		public static void Main(string[] args)
 		{
-			CreateHostBuilder(args).Build().Run();
+			IConfigurationRoot configuration = GetConfiguration();
+			ConfiguraLog(configuration);
+
+			try
+			{
+				Log.Information("Iniciando o projeto Web Messages!");
+				CreateHostBuilder(args).Build().Run();
+			}
+			catch (Exception ex)
+			{
+				Log.Fatal(ex, "Erro de execução!");
+			}
+			finally
+			{
+				Log.CloseAndFlush();
+			}
+
+		}
+
+		private static void ConfiguraLog(IConfigurationRoot configuration)
+		{
+			Log.Logger = new LoggerConfiguration()
+							.ReadFrom.Configuration(configuration)
+							.CreateLogger();
+		}
+
+		private static IConfigurationRoot GetConfiguration()
+		{
+			string ambiente = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+			var configuration = new ConfigurationBuilder()
+				.SetBasePath(Directory.GetCurrentDirectory())
+				.AddJsonFile("appsettings.json")
+				.AddJsonFile($"appsettings.{ambiente}.json")
+				.Build();
+			return configuration;
 		}
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>
 			Host.CreateDefaultBuilder(args)
+				.UseSerilog()
 				.ConfigureWebHostDefaults(webBuilder =>
 				{
 					webBuilder.UseStartup<Startup>();

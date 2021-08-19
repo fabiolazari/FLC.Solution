@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace FlcIO.Business.Services
 {
@@ -57,8 +57,9 @@ namespace FlcIO.Business.Services
                 tarefa.RemoveAll(t => t.Status != TaskStatus.Running);
                 Thread.Sleep(Segundo * 5);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Information($"Erro: {ex.Message}");
                 return false;
             }
 
@@ -76,12 +77,14 @@ namespace FlcIO.Business.Services
                 while (Executa(message)); 
             }));
             threadMain.Start();
+            Log.Information("Iniciando thread de envio de mensagens!");
 
             return Task.CompletedTask;
         }
 
         public static Task StopMessage()
 		{
+            Log.Information("Finalizando thread de envio de mensagens!");
             threadMain.Interrupt();
             return Task.CompletedTask;
         }
