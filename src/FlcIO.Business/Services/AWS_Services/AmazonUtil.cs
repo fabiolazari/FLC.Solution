@@ -1,4 +1,5 @@
 ﻿using Amazon;
+using Amazon.Lambda.Core;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.SQS;
@@ -71,6 +72,7 @@ namespace FlcIO.Business.Services.AWS_Services
 				QueueUrl = _queueUrl,
 				MessageBody = jsonMessage
 			};
+			
 			await _client.SendMessageAsync(request);
 		}
 
